@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/*
+ * rememberSaveable -> 상태를 저장 AutoSaver가 존재
+ * remember -> 상태 저장 x  -> 해당 compose가 보이지 않거나 Composer.Empty 면 이전상태값으로 복귀
+ */
+
 package com.codelab.basics
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
@@ -23,6 +28,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,13 +36,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -48,9 +48,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.codelab.basics.ui.BasicsCodelabTheme
 
@@ -78,25 +82,32 @@ private fun MyApp() {
 
 @Composable
 private fun OnboardingScreen(onContinueClicked: () -> Unit) {
-    Surface {
+
+    Surface(color = Color.DarkGray, modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Welcome to the Basics Codelab!")
+            // font bold 처음에 font style 에 있는건줄 착각 cause xml textStyle
+            Text("Android GDG CodeLab!!", color = Color.White, fontWeight = FontWeight.Bold)
+
             Button(
                 modifier = Modifier.padding(vertical = 24.dp),
-                onClick = onContinueClicked
+                onClick = onContinueClicked,
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 9.dp,
+                    pressedElevation = 19.dp
+                )
             ) {
-                Text("Continue")
+                Text("show Lazy Column")
             }
         }
     }
 }
 
 @Composable
-private fun Greetings(names: List<String> = List(1000) { "$it" } ) {
+private fun Greetings(names: List<String> = List(1000) { "$it" }) {
     LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
         items(items = names) { name ->
             Greeting(name = name)
@@ -110,14 +121,14 @@ private fun Greeting(name: String) {
         backgroundColor = MaterialTheme.colors.primary,
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
-        CardContent(name)
+        ColumnContent(name)
     }
 }
 
 @Composable
-private fun CardContent(name: String) {
-    var expanded by remember { mutableStateOf(false) }
-
+private fun ColumnContent(name: String) {
+    val expanded = rememberSaveable { mutableStateOf(false) }
+    var input by remember { mutableStateOf("") }
     Row(
         modifier = Modifier
             .padding(12.dp)
@@ -140,23 +151,17 @@ private fun CardContent(name: String) {
                     fontWeight = FontWeight.ExtraBold
                 )
             )
-            if (expanded) {
-                Text(
-                    text = ("Composem ipsum color sit lazy, " +
-                        "padding theme elit, sed do bouncy. ").repeat(4),
+            if (expanded.value) {
+                TextField(
+                    value = input,
+                    onValueChange = { input = it },
+                    maxLines = 1,
+                    singleLine = true,
                 )
             }
         }
-        IconButton(onClick = { expanded = !expanded }) {
-            Icon(
-                imageVector = if (expanded) Filled.ExpandLess else Filled.ExpandMore,
-                contentDescription = if (expanded) {
-                    stringResource(R.string.show_less)
-                } else {
-                    stringResource(R.string.show_more)
-                }
-
-            )
+        OutlinedButton(onClick = { expanded.value = !expanded.value }) {
+            Text(color = Color.White, text = if (expanded.value) "Show less" else "Show More")
         }
     }
 }
