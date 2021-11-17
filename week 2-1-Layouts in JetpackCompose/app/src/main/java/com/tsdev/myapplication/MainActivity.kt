@@ -5,9 +5,7 @@ import android.util.Log
 import android.widget.Toolbar
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -24,6 +22,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,7 +30,11 @@ import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.tsdev.myapplication.ui.appbar.MyAppBar
+import com.tsdev.myapplication.ui.child.Chip
+import com.tsdev.myapplication.ui.child.topics
+import com.tsdev.myapplication.ui.constraint.ConstraintLayoutContent
 import com.tsdev.myapplication.ui.custom.MyColumn
+import com.tsdev.myapplication.ui.custom.StaggeredGrid
 import com.tsdev.myapplication.ui.custom.firstBaselineToTop
 import com.tsdev.myapplication.ui.list.ImageList
 import com.tsdev.myapplication.ui.navi.MyBottomNavigation
@@ -47,7 +50,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     topBar = { MyAppBar() },
                     bottomBar = { MyBottomNavigation() }
-                ) { BodyContent() }
+                ) { ConstraintLayoutContent() }
                 // A surface container using the 'background' color from the theme
             }
         }
@@ -104,6 +107,25 @@ fun SurfaceCardView(modifier: Modifier = Modifier) {
         }
         PhotographerCard()
     }
+}
+
+@Composable
+fun StaggeredGridBodyContent(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .background(color = Color.LightGray)
+            .size(200.dp)
+            .padding(16.dp)
+            .horizontalScroll(rememberScrollState())
+    ) {
+
+        StaggeredGrid(modifier, rows = 5) {
+            for (topic in topics) {
+                Chip(modifier = Modifier.padding(8.dp), text = topic)
+            }
+        }
+    }
+
 }
 
 
