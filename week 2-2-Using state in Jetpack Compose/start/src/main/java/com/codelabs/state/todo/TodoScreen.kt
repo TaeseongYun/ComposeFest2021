@@ -58,7 +58,7 @@ fun TodoScreen(
             items(items = items) {
                 TodoRow(
                     todo = it,
-                    onItemClicked = { onRemoveItem(it) },
+                    onItemClicked = { item ->  onRemoveItem(item) },
                     modifier = Modifier.fillParentMaxWidth()
                 )
             }
